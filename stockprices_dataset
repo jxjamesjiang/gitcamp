@@ -1,3 +1,4 @@
+
 #coding=utf-8
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -26,4 +27,25 @@ cv_score = model.score(x_test,y_test)
 #打印打分结果
 result = 'train_score:{};cv_score:{}'.format(train_score,cv_score)
 print(result)
+
+#对准确率进行评估
+ErrorTolerance = 0.5
+correct = 0
+y_test_cnt = y_test.size
+y_predict = model.predict(x_test)
+for index in range(y_test_cnt):
+    if abs(y_predict[index] - y_test[index])/y_test[index] <= ErrorTolerance:
+        correct = correct + 1
+
+correct_predict = correct/y_test_cnt 
+result ='预测准确性:{}'.format(correct_predict)
+print(result)
+
+    
+
+
+
+
+
+
 
