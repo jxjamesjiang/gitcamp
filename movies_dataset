@@ -1,0 +1,40 @@
+#coding=utf-8
+import numpy as np
+import pandas as pd
+
+# 导入电影数据
+
+#这段代码是参考同学wangzhao;也是这段代码，被Python圈粉了，没想到python在数据处理这么强大，这么简洁。
+'''
+  补充一下，下面代码都是将有问题数据直接丢失。后面掌握了pandas,将其修改为fill
+'''
+used_features = ["director", "starring","type","release_date","rate","votes","region","runtime","language","company"]
+
+data = pd.read_csv("./task/movies_dataset.csv",encoding='utf-8')
+
+#将要丢弃的值设置为NAN;为后面丢弃做准备
+dataset = data[used_features].applymap(lambda x: x.replace("\'",'').replace(r"\n","").strip()).applymap(lambda x: np.NaN if str(x).isspace() or x=='null' else x)
+#将missing data丢弃
+'''
+参数说明
+how : {‘any’, ‘all’}, default ‘any’
+
+Determine if row or column is removed from DataFrame, when we have at least one NA or all NA.
+
+‘any’ : If any NA values are present, drop that row or column.
+‘all’ : If all values are NA, drop that row or column.
+'''
+dataset.dropna(axis=0, how='any', inplace=True)
+
+
+number_features = ['rate','votes','runtime']
+dataset[number_features]=dataset[number_features].applymap(lambda x: float(x) if x.isdigit() else -1)
+dataset = dataset[dataset['votes']>100]
+dataset = dataset[dataset['rate']>0]
+dataset = dataset[dataset['runtime']>0]
+
+dataset[['rate','votes','runtime']] = dataset[['rate','votes','runtime']].apply(pd.to_numeric)
+
+Y=dataset['rate'].values
+used_features = ["votes","runtime"]
+X = dataset[used_features].values
